@@ -18,5 +18,9 @@ misc
 images
 include
 samples
-
+moc_qtenv.cpp
+ui_*
+*.un~
+*.kdev4
+.metadata
 

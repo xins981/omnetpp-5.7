@@ -42,7 +42,7 @@ void RealtimeOutputVector::lifecycleEvent(SimulationLifecycleEventType eventType
 		chPid = fork();
 		if(chPid == 0)
 		{
-			execlp("python3.8", "ddosdetect", "DDosDetection.py", nullptr);
+			execlp("python3", "ddosdetect", "DDosDetection.py", nullptr);
 		}
 	}
 }

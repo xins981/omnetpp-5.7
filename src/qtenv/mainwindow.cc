@@ -58,8 +58,8 @@
 #include "videorecordingdialog.h"
 #include "qtutil.h"
 
-//#include <thread>
-//#include <chrono>
+
+
 
 #define emit
 
@@ -158,22 +158,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     ui->actionDebugOnErrors->setChecked(getQtenv()->debugOnErrors);
     
-    /*isTwitch = true;
-    std::thread([this]() {
-			while(this->isTwitch)
-			{
-				// sleep every interval and do the task again and again until times up
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
-				// 获取runmode
-                RunMode lastRunMode = this->env->getSimulationRunMode();
-                // 暂停执行
-                this->stopSimulation();
-                // 等0.5秒
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                // 开始执行，按照旧的runmode
-                this->runSimulation(lastRunMode);
-			}
-		}).join();*/
+    
 }
 
 MainWindow::~MainWindow()

@@ -81,6 +81,8 @@
 #include <thread>
 #include <chrono>
 
+#include <QTimer>
+
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h> // for the TransformProcessType magic on startup
 #endif
@@ -516,6 +518,10 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
     inspectorfactories.getInstance()->setName("inspectorfactories");
 
     loadResource();
+    
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Qtenv::flush);
+    
 }
 
 Qtenv::~Qtenv()
@@ -746,6 +752,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
+    timer->start(1000);
     try {
         // funky while loop to handle switching to and from EXPRESS mode....
         bool cont = true;
@@ -774,6 +781,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
+    timer->stop();
     stopClock();
     stopSimulationFlag = false;
 
@@ -1622,6 +1630,11 @@ void Qtenv::initialSetUpConfiguration()
     mainWindow->reflectRecordEventlog();
 
     QTimer::singleShot(0, mainWindow, &MainWindow::activateWindow);
+}
+
+void Qtenv::flush()
+{
+    outvectorManager->flush();
 }
 
 void Qtenv::askParameter(cPar *par, bool unassigned)

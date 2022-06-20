@@ -23,6 +23,7 @@
 #include <QModelIndex>
 #include "qtenv.h"
 
+
 class QGraphicsScene;
 class QStandardItem;
 class QTreeView;
@@ -75,7 +76,7 @@ public:
     void restoreGeometry();
 
     QSize sizeHint() const override { return QSize(1100, 700); }
-
+          
     void busy(QString msg = "");
     bool isRunning();
     void setGuiForRunmode(RunMode runMode, bool untilMode = false);
@@ -91,6 +92,9 @@ public:
     static int playbackSpeedToSliderValue(double speed) { return std::round(std::log10(speed) * 100); }
     static double sliderValueToPlaybackSpeed(int value) { return std::pow(10, value / 100.0); }
 
+
+    
+    
 public slots:
 
     void on_actionOneStep_triggered() { runSimulation(RUNMODE_STEP); } // has special skipping behavior of its own
@@ -182,6 +186,7 @@ private:
     FileEditor *fileEditor;
     QLabel *simTimeLabel, *eventNumLabel;
     bool simTimeUnits;
+    
 	
 	//bool isTwitch;
 	

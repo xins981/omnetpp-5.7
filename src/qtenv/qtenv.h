@@ -40,6 +40,7 @@
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include "realtimeoutputvector.h"
+#include <QTimer>
 
 class QWidget;
 
@@ -214,6 +215,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
 	private:
 		RealtimeOutputVector* realtimeoutputer;
+        QTimer *timer;
 
 
    public:
@@ -314,6 +316,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void setComponentLogLevel(cComponent *component, LogLevel level, bool save = false);
 
       void initialSetUpConfiguration();
+      
+      void flush();
 
   protected:
       // redefined virtual functions from EnvirBase
