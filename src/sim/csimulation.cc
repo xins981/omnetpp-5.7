@@ -386,6 +386,8 @@ void cSimulation::setupNetwork(cModuleType *network)
         cContextTypeSwitcher tmp(CTX_BUILD);
         getEnvir()->notifyLifecycleListeners(LF_PRE_NETWORK_SETUP);
         cModule *module = networkType->create(networkType->getName(), nullptr);
+        // 使用进行自定义初始化
+        getEnvir()->setParametersbyUser(module);
         module->finalizeParameters();
         module->buildInside();
         getEnvir()->notifyLifecycleListeners(LF_POST_NETWORK_SETUP);

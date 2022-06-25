@@ -264,6 +264,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
       virtual bool askYesNo(const char *question) override;
 
+      virtual void setParametersbyUser(cComponent *component) override;
+
       virtual void refOsgNode(osg::Node *scene) override;
       virtual void unrefOsgNode(osg::Node *scene) override;
       virtual bool idle() override;
