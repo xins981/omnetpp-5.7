@@ -76,12 +76,13 @@
 #include "displayupdatecontroller.h"
 #include "messageanimator.h"
 #include "runselectiondialog.h"
+#include "networkparametersinputdialog.h"
 
 #include "realtimeoutputvector.h"
 #include <thread>
 #include <chrono>
 
-#include <QTimer>
+
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h> // for the TransformProcessType magic on startup
@@ -127,6 +128,7 @@ extern "C" QTENV_API void _qtenv_lib() {}
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "80KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_STRING, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. A run filter is also accepted. The default is to ask the user.");
+Register_PerRunConfigOption(CFGID_PARAMETERS_DEFINED_BY_USER, "parameters-defined-by-user", CFG_STRING, nullptr, "指定了用户自定义的参数");
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
@@ -2344,6 +2346,50 @@ bool Qtenv::askYesNo(const char *question)
         case QMessageBox::No:  return false;
         default: throw cRuntimeError(E_CANCEL);
     }
+}
+
+void Qtenv::setParametersbyUser(cComponent *component){
+    // 如果自定义参数列表项不存在则跳过，否则根据列表项内容跳出输入界面
+    std::string userDefinedParameters = cfg->getAsString(CFGID_PARAMETERS_DEFINED_BY_USER);
+    if(userDefinedParameters.empty()){
+        return;
+    }else{
+        // 解析要自定义的参数
+        std::vector<std::string> parameters  = StringTokenizer(userDefinedParameters.c_str()).asVector();
+        std::map<std::string, std::pair<std::string, std::string>> parametersMap;
+        for(std::string tmp : parameters){
+            // 切分参数与标志
+            std::vector<std::string> ret;
+            while (tmp.find(":") != std::string::npos) {
+                std::string t1 = tmp.substr(0, tmp.find(":"));
+                if (!t1.empty()) 
+                    ret.push_back(t1);
+                tmp = tmp.substr(tmp.find(":") + 1);
+            }
+            std::string v = "";
+            if (!tmp.empty()) ret.push_back(tmp);
+            // 切分出默认值
+            if(ret[0].find("[") != std::string::npos && ret[0].find("]") != std::string::npos){
+                std::string k = ret[0].substr(0, ret[0].find("["));
+                std::string m = ret[0].substr(ret[0].find("[")+1, ret[0].find("]"));
+                if (!m.empty()) 
+                    v = m;
+                ret[0] = k;
+            }
+            // 赋值
+            if(ret.size() > 2)
+                ;// 这里应该插入error
+            else if (ret.size() == 2){
+                parametersMap[ret[0]] = {v,ret[1]};
+            }else{
+                parametersMap[ret[0]] = {v,ret[0]};
+            }
+        }
+        // 新建模态对话框
+        auto dialog= new NetWorkParametersInputDialog(component, parametersMap, mainWindow);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec(); // 阻塞
+    } 
 }
 
 unsigned Qtenv::getExtraStackForEnvir() const
