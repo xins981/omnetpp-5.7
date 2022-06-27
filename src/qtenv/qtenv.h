@@ -40,6 +40,7 @@
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include "realtimeoutputvector.h"
+#include <QTimer>
 
 class QWidget;
 
@@ -214,7 +215,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
 	private:
 		RealtimeOutputVector* realtimeoutputer;
-
+        // the timer for flush vector statistic data
+        QTimer *timer;
 
    public:
       Qtenv();
@@ -316,6 +318,9 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void setComponentLogLevel(cComponent *component, LogLevel level, bool save = false);
 
       void initialSetUpConfiguration();
+      
+      // flush vector data in buffer to disk by call flush method of vectoroutputmanager object
+      void flush();
 
   protected:
       // redefined virtual functions from EnvirBase

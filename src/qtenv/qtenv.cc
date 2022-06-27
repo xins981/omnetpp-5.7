@@ -79,8 +79,7 @@
 #include "networkparametersinputdialog.h"
 
 #include "realtimeoutputvector.h"
-#include <thread>
-#include <chrono>
+#include <QTimer>
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h> // for the TransformProcessType magic on startup
@@ -503,6 +502,9 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
 	realtimeoutputer = new RealtimeOutputVector();
 	this->addLifecycleListener(realtimeoutputer);
 
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Qtenv::flush);
+
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
@@ -748,6 +750,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
+    timer->start(1000);
     try {
         // funky while loop to handle switching to and from EXPRESS mode....
         bool cont = true;
@@ -776,6 +779,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
+    timer->stop();
     stopClock();
     stopSimulationFlag = false;
 
@@ -802,6 +806,11 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     updateStatusDisplay();
     callRefreshInspectors();
+}
+
+void Qtenv::flush()
+{
+    outvectorManager->flush();
 }
 
 void Qtenv::setSimulationRunMode(RunMode mode)
