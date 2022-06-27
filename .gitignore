@@ -23,7 +23,7 @@ ui_*
 *.un~
 *.kdev4
 .metadata
-/osg
-/cmdenv
-/tkenv
+osg
+cmdenv
+tkenv
 ChangeLog
