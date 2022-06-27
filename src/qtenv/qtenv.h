@@ -40,7 +40,6 @@
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include "realtimeoutputvector.h"
-#include <QTimer>
 
 class QWidget;
 
@@ -215,7 +214,6 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
 	private:
 		RealtimeOutputVector* realtimeoutputer;
-        QTimer *timer;
 
 
    public:
@@ -263,6 +261,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void alert(const char *msg) override;
       virtual std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
       virtual bool askYesNo(const char *question) override;
+
+      virtual void setParametersbyUser(cComponent *component) override;
 
       virtual void refOsgNode(osg::Node *scene) override;
       virtual void unrefOsgNode(osg::Node *scene) override;
@@ -316,8 +316,6 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void setComponentLogLevel(cComponent *component, LogLevel level, bool save = false);
 
       void initialSetUpConfiguration();
-      
-      void flush();
 
   protected:
       // redefined virtual functions from EnvirBase
