@@ -18,9 +18,12 @@ misc
 images
 include
 samples
-moc_qtenv.cpp
+moc_*
 ui_*
 *.un~
 *.kdev4
 .metadata
-
+/osg
+/cmdenv
+/tkenv
+ChangeLog
